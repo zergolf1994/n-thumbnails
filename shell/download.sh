@@ -20,10 +20,12 @@ quality=$(echo $data | jq -r ".quality")
 outPutPath=$(echo $data | jq ".outPutPath"  --raw-output)
 root_dir=$(echo $data | jq -r ".root_dir")
 
-#sudo bash ${root_dir}/shell/updatePercent.sh ${slug} > /dev/null &
 sudo rm -rf $outPutPath
 sleep 2
 mkdir -p $outPutPath
+
+sudo bash ${root_dir}/shell/updatePercent.sh ${slug} > /dev/null &
+
 if [[ $source != "null" ]]; then
 
     outPut=${outPutPath}/file_video.mp4

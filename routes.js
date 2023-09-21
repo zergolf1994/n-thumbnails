@@ -27,10 +27,9 @@ router.get("/thumbnail/remote/:slug", UploadThumbnail);
 //เสร็จสิ้น
 router.get("/done/:slug", ConvertDone);
 
-/*
-
+const { DownloadPercent } = require("./controllers/data");
 router.get("/download-percent", DownloadPercent);
-*/
+
 const {
   serverCreate,
   serverReload,

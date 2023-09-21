@@ -27,9 +27,7 @@ exports.DownloadPercent = async (req, res) => {
     if (!fs.existsSync(`${global.dirPublic}${fileId}`)) {
       return res.json({ error: true, msg: "ไม่พบข้อมูล" });
     }
-    const downloadPath = `${global.dirPublic}${fileId}/file_default.txt`;
-    const convertPath = `${global.dirPublic}${fileId}/convert_default.txt`;
-    const remotePath = `${global.dirPublic}${fileId}/remote_default.txt`;
+    const downloadPath = `${global.dirPublic}${fileId}/file_video.txt`;
 
     let data = {};
     if (!fs.existsSync(downloadPath)) {
@@ -59,51 +57,13 @@ exports.DownloadPercent = async (req, res) => {
       data.download = Math.max(...Array) || 0;
     }
 
-    if (!fs.existsSync(convertPath)) {
-      data.convert = 0;
-    } else {
-      const logData = await fs.readFileSync(convertPath, "utf-8");
-      try {
-        data.convert = JSON.parse(logData).percent || 0;
-      } catch (error) {
-        data.convert = 0;
-      }
-    }
-    if (!fs.existsSync(remotePath)) {
-      data.remote = 0;
-    } else {
-      const logData = await fs.readFileSync(remotePath, "utf-8");
-      const svIp = JSON.parse(logData).svIp;
-      const dataUpload = await getReq(
-        `http://${svIp}/file-size/${fileId}/file_default.mp4`
-      );
-
-      if (!dataUpload?.size) {
-        data.remote = 0;
-      } else {
-        const stats = fs.statSync(
-          `${global.dirPublic}${fileId}/file_default.mp4`
-        );
-        const localSize = stats.size;
-        if (localSize == dataUpload?.size) {
-          data.remote = 100;
-        } else {
-          data.remote =
-            ((Number(dataUpload?.size) * 100) / localSize ?? 0).toFixed(0) || 0;
-        }
-      }
-    }
-
-    let allPercent =
-      Number(data.download) + Number(data.convert) + Number(data.remote);
-
-    let totalPercent = ((allPercent * 100) / 300 ?? 0).toFixed(0) || 0;
+    let totalPercent = Number(data.download) || 0;
 
     //find file id
     const files = await File.List.findOne({ slug: fileId }).select(`_id`);
     if (files?._id) {
       await File.Process.findOneAndUpdate(
-        { fileId: files?._id, type: "remote" },
+        { fileId: files?._id, type: "thumbnails" },
         { percent: totalPercent }
       );
     }
