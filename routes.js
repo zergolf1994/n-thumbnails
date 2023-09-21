@@ -8,28 +8,29 @@ const {
   ConvertDone,
 } = require("./controllers/start");
 
-router.get("/start", ProcessStart);
-
-router.get("/data", DataDownload);
-router.get("/done/:slug", ConvertDone);
-
-const { UploadToStorage } = require("./controllers/remote");
-
-const { DataConvert, ConvertResolution } = require("./controllers/convert");
-router.get("/convert/data/:slug", DataConvert);
-router.get("/convert/:slug/:quality", ConvertResolution);
-
-router.get("/remote/:slug/:quality", UploadToStorage);
+const { CreateThumbs } = require("./controllers/convert");
 
 const { DataThumbnail, UploadThumbnail } = require("./controllers/thumbnail");
+//สร้าง
+router.get("/start", ProcessStart);
+
+//ข้อมูลดาวน์โหลด
+router.get("/data", DataDownload);
+
+//สร้างรูปภาพขนาดย่อ 1 รูป
+router.get("/thumb-create/:slug", CreateThumbs);
+
+//สร้างรูปภาพขนาดย่อ
 router.get("/thumbnail/data/:slug", DataThumbnail);
 router.get("/thumbnail/remote/:slug", UploadThumbnail);
 
-const { DataVideo, DownloadPercent } = require("./controllers/data");
-router.get("/video/:fileId/:fileName", DataVideo);
+//เสร็จสิ้น
+router.get("/done/:slug", ConvertDone);
+
+/*
 
 router.get("/download-percent", DownloadPercent);
-
+*/
 const {
   serverCreate,
   serverReload,

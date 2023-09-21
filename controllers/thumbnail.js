@@ -14,36 +14,14 @@ exports.DataThumbnail = async (req, res) => {
     const file = await File.List.findOne({ slug }).select(`_id userId`);
     if (!file?._id) return res.json({ error: true, msg: "No data_file." });
 
-    const data_video = await File.Data.findOne({
-      type: "video",
-      name: ["360", "480", "720", "1080"],
-    }).select(`_id name serverId`);
-    if (!data_video?._id)
-      return res.json({ error: true, msg: "No data_video." });
+    const imageFilename = path.join(global.dirPublic, slug, `thumbnail.png`);
 
-    const server = await Server.List.findOne({
-      _id: data_video?.serverId,
-    }).select(`_id svIp`);
-    if (!server?._id) return res.json({ error: true, msg: "No data_server." });
+    if (!fs.existsSync(imageFilename)) {
+      return { error: true, msg: "No image." };
+    }
+    const { width, height } = sizeOf(imageFilename);
 
-    const imageUrl = `http://${server.svIp}:8889/thumb/${slug}/file_${data_video?.name}.mp4/thumb-1000-w150.jpg`;
-
-    const imageFilename = path.join(
-      global.dirPublic,
-      slug,
-      `downloaded_image.jpg`
-    );
-
-    const downImg = await DownloadImage(imageUrl, imageFilename);
-    if (downImg?.error) return res.json({ error: true, msg: "No image." });
-
-    const { width, height } = sizeOf(downImg?.savePath);
-
-    const videoOutput = path.join(
-      global.dirPublic,
-      slug,
-      `file_${data_video?.name}.mp4`
-    );
+    const videoOutput = path.join(global.dirPublic, slug, `file_video.mp4`);
 
     if (!fs.existsSync(videoOutput)) {
       return { error: true, msg: "No video." };
@@ -73,10 +51,14 @@ exports.UploadThumbnail = async (req, res) => {
     const file = await File.List.findOne({ slug }).select(`_id slug userId`);
     if (!file?._id) return res.json({ error: true, msg: "No data_file." });
 
-    const data_video = await File.Data.findOne({
-      type: "video",
-      name: ["360", "480", "720", "1080"],
-    }).select(`_id name serverId`);
+    const data_video = await File.Data.findOne(
+      {
+        type: "video",
+        name: ["360", "480", "720", "1080"],
+      },
+      null,
+      { sort: { name: 1 } }
+    ).select(`_id name serverId`);
     if (!data_video?._id)
       return res.json({ error: true, msg: "No data_video." });
 
@@ -148,7 +130,6 @@ exports.UploadThumbnail = async (req, res) => {
     } else {
       return res.json({ error: true, msg: `ลองอีกครั้ง` });
     }
-    return res.json(uploadJpg);
   } catch (err) {
     console.log(err);
     return res.json({ error: true });

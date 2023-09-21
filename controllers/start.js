@@ -48,12 +48,12 @@ exports.ProcessStart = async (req, res) => {
         { isWork: true }
       );
       // คำสั่ง เพื่อดำเนินการ ส่งต่อไปยัง bash
-      /*shell.exec(
+      shell.exec(
         `sudo bash ${global.dir}/shell/download.sh ${fileId}`,
         { async: false, silent: false },
         function (data) {}
-      );*/
-      
+      );
+
       return res.json({
         msg: "สร้างสำเร็จ",
       });
@@ -167,17 +167,17 @@ exports.ConvertDone = async (req, res) => {
 
     const file = await File.List.findOne({ slug }).select(`_id slug userId`);
     if (!file?._id) return res.json({ error: true, msg: "No data_file." });
-
+/*
     const totalVideo = await File.Data.countDocuments({
       fileId: file?._id,
       type: "video",
       name: ["360", "480", "720", "1080"],
     });
     if (!totalVideo) return res.json({ error: true, msg: "No totalVideo." });
-
+*/
     const file_process = await File.Process.findOne({
       fileId: file?._id,
-      type: "convert",
+      type: "thumbnails",
     });
 
     await Server.List.findByIdAndUpdate(

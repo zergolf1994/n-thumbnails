@@ -21,11 +21,13 @@ outPutPath=$(echo $data | jq ".outPutPath"  --raw-output)
 root_dir=$(echo $data | jq -r ".root_dir")
 
 #sudo bash ${root_dir}/shell/updatePercent.sh ${slug} > /dev/null &
-
+sudo rm -rf $outPutPath
+sleep 2
+mkdir -p $outPutPath
 if [[ $source != "null" ]]; then
 
-    outPut=${outPutPath}/file_default.mp4
-    downloadtmpSave="${outPutPath}/file_default.txt"
+    outPut=${outPutPath}/file_video.mp4
+    downloadtmpSave="${outPutPath}/file_video.txt"
     
     curl "${source}" -o ${outPut} --progress-bar > ${downloadtmpSave} 2>&1
 
@@ -33,7 +35,9 @@ if [[ $source != "null" ]]; then
 fi
 
 sleep 5
-sudo bash ${root_dir}/shell/convert.sh ${slug} 
+curl -sS "http://${localhost}/thumb-create/${slug}"
+
+#sudo bash ${root_dir}/shell/convert.sh ${slug} 
 
 sleep 5
 sudo bash ${root_dir}/shell/thumbnail.sh ${slug} 

@@ -164,3 +164,43 @@ exports.ConvertQuality = async ({ slug, quality }) => {
     return { error: true };
   }
 };
+
+exports.Screenshot = async ({ slug, thumb_size }) => {
+  try {
+    const videoInput = path.join(global.dirPublic, slug, `file_video.mp4`),
+      folderPath = path.join(global.dirPublic, slug);
+
+    if (!fs.existsSync(videoInput)) {
+      return { error: true, msg: "ไม่พบวิดีโอ" };
+    }
+    let { streams } = await this.GetData(videoInput);
+
+    const videoStream = streams.find((stream) => stream.codec_type === "video");
+    if (!videoStream) {
+      return res.json({ error: true, msg: "ไม่พบสตรีมวิดีโอในไฟล์" });
+    }
+
+    let { width, height, codec_name } = videoStream;
+
+    return new Promise((resolve, reject) => {
+      ffmpeg(videoInput)
+        .screenshot({
+          timestamps: [10], // เวลาที่คุณต้องการสร้าง thumbnail
+          folder: folderPath, // เส้นทางสำหรับบันทึก thumbnail
+          filename: "thumbnail.png", // ชื่อไฟล์ thumbnail
+          size: `${thumb_size}x?`, // ขนาดของ thumbnail
+        })
+        .on("end", () => {
+          resolve({ msg: "created" });
+          //console.log("Thumbnail created successfully!");
+        })
+        .on("error", (err) => {
+          resolve({ error: true, err });
+          //console.error("Error creating thumbnail:", err);
+        });
+    });
+  } catch (error) {
+    //console.error(error);
+    return { error: true };
+  }
+};
