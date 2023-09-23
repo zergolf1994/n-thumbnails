@@ -18,7 +18,7 @@ exports.CreateThumbs = async (req, res) => {
       await File.Lock.create({
         msg: "CreateThumbs",
         userId: row?.userId,
-        fileId: row?.fileId,
+        fileId: row?._id,
       });
       console.log("call reload");
       await useCurl.get(`http://127.0.0.1/server/reload`);
