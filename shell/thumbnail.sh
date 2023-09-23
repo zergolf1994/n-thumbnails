@@ -6,8 +6,6 @@ fi
 localhost="127.0.0.1"
 slug=${1}
 
-echo "${slug} | thumbnails generator"
-
 data=$(curl -sLf "http://${localhost}/thumbnail/data/${slug}" | jq -r ".")
 
 error=$(echo $data | jq -r ".error")
@@ -26,12 +24,11 @@ columns=$(echo $data | jq -r ".columns")
 output=$(echo $data | jq -r ".output")
 root_dir=$(echo $data | jq -r ".root_dir")
 
+processtmp="${root_dir}/public/${slug}/generator.txt"
 
-#dos2unix ${root_dir}/thumbnail/generator
-#chmod +x ${root_dir}/thumbnail/generator
-
+echo "${slug} | thumbnails generator"
 sleep 5
-${root_dir}/thumbnail/generator ${video} ${interval} ${width} ${height} ${columns} ${output}
+${root_dir}/thumbnail/generator ${video} ${interval} ${width} ${height} ${columns} ${output} > ${processtmp} 2>&1
 sleep 3
 curl -sS "http://${localhost}/thumbnail/remote/${slug}"
 sleep 3
