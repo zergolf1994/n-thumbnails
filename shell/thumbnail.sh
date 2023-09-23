@@ -27,8 +27,8 @@ output=$(echo $data | jq -r ".output")
 root_dir=$(echo $data | jq -r ".root_dir")
 
 
-dos2unix ${root_dir}/thumbnail/generator
-chmod +x ${root_dir}/thumbnail/generator
+#dos2unix ${root_dir}/thumbnail/generator
+#chmod +x ${root_dir}/thumbnail/generator
 
 sleep 5
 ${root_dir}/thumbnail/generator ${video} ${interval} ${width} ${height} ${columns} ${output}
