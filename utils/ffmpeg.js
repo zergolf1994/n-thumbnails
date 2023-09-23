@@ -194,7 +194,7 @@ exports.Screenshot = async ({ slug, thumb_size }) => {
           resolve({ msg: "created" });
           //console.log("Thumbnail created successfully!");
         })
-        .on("error", (err) => {
+        .on("error", async (err) => {
           resolve({ error: true, err });
           //console.error("Error creating thumbnail:", err);
         });
